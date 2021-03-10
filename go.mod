@@ -18,6 +18,7 @@ require (
 	github.com/klauspost/cpuid v1.3.0 // indirect
 	github.com/klauspost/pgzip v1.2.1 // indirect
 	github.com/klauspost/reedsolomon v1.9.9 // indirect
+	github.com/lizongshen/gocommand v0.0.0-20180727133302-41f166788491
 	github.com/mmcloughlin/avo v0.0.0-20200523190732-4439b6b2c061 // indirect
 	github.com/panjf2000/ants/v2 v2.4.2
 	github.com/pkg/errors v0.9.1
