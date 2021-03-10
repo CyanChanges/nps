@@ -3,26 +3,11 @@ name: Release
 on:
   release:
     types: [published]
-    branches: [ master ]  
+    branches: [ master ]
 #修改扩展名go或yml、web/views目录文件时，将触发编译
 #paths 参数见https://docs.github.com/cn/actions/reference/workflow-syntax-for-github-actions
-  push:
-    branches:
-      - master
-    paths:
-      - '**.go'
-      - '**.yml'
-      - 'web/views/**'
-  schedule:
-    - cron: 0 8 * * *   
-# on:
-#   release:
-#     types: [published]
-#     branches: [ master ] 
-#   schedule:
-#     - cron: 0 8 * * *   
-  
 jobs:
+
   build_assets:
     
     runs-on: ubuntu-latest
@@ -35,7 +20,6 @@ jobs:
       id: go
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-      
     - name: Get dependencies
       run: |
         go get -v -t -d ./...
@@ -43,12 +27,11 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-        
     - name: Build
       run: |
         chmod +x build.assets.sh
         ./build.assets.sh
-    - name: Upload to release
+    - name: Upload
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
@@ -88,18 +71,7 @@ jobs:
           npc_sdk.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
-    - name: Upload to CowTransfer
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-         ./transfer cow --block 2621440 -s -p 64 --no-progress *.tar.gz  2>&1 | tee cowtransfer.log
-         echo "::warning file=Firmware-Cowtransfer.com::$(cat cowtransfer.log | grep https)"
-    
-    - name: Upload To WeTransfer
-      run: |
-        ./transfer wet -s -p 16 --no-progress *.tar.gz 2>&1 | tee wetransfer.log 
-        echo "::warning file=Firmware-Wetransfer.com::$(cat wetransfer.log | grep https)"
-    
+        
   build_android:
     
     runs-on: ubuntu-latest
@@ -144,3 +116,49 @@ jobs:
           npc_syno.spk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build_docker:
+    
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push nps
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile.nps
+        platforms: linux/amd64,linux/arm,linux/arm64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/nps:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/nps:${{ env.RELEASE_VERSION }}
+    - name: Build and push npc
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile.npc
+        platforms: linux/amd64,linux/arm,linux/arm64
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/npc:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/npc:${{ env.RELEASE_VERSION }}
