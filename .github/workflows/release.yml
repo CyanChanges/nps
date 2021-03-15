@@ -4,8 +4,7 @@ on:
   release:
     types: [published]
     branches: [ master ]
-#修改扩展名go或yml、web/views目录文件时，将触发编译
-#paths 参数见https://docs.github.com/cn/actions/reference/workflow-syntax-for-github-actions
+
 jobs:
 
   build_assets:
