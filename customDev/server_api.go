@@ -30,5 +30,5 @@ func GetFreePort(c *fiber.Ctx) error {
 // 返回代理
 func RandHttpProxy(c *fiber.Ctx) error {
 
-	return c.SendString("222")
+	return c.SendString("aaaa")
 }
