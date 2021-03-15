@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"ehang.io/nps/customDev"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/config"
 	"ehang.io/nps/lib/conn"
@@ -156,6 +157,13 @@ re:
 		}
 		if !c.GetAddStatus() {
 			logs.Error(errAdd, v.Ports, v.Remark)
+
+			// 自动修改端口
+			newPort := customDev.GetPort()
+			if newPort != "" {
+				logs.Informational("Change to Port: %s instead", newPort)
+				v.Ports = newPort
+			}
 			goto re
 		}
 		if v.Mode == "file" {
@@ -523,4 +531,10 @@ func getRandomPortArr(min, max int) []int {
 		addrAddr[r] = temp
 	}
 	return addrAddr
+}
+
+func portOccupied() {
+	var errAdd = errors.New("Proxy port occupied, restart client.")
+	logs.Error(errAdd)
+	os.Exit(120)
 }

@@ -12,6 +12,7 @@ require (
 	github.com/ccding/go-stun v0.0.0-20180726100737-be486d185f3d
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
+	github.com/gofiber/fiber/v2 v2.6.0
 	github.com/golang/snappy v0.0.2
 	github.com/hooklift/assert v0.0.0-20170704181755-9d1defd6d214 // indirect
 	github.com/kardianos/service v1.0.0
@@ -26,10 +27,8 @@ require (
 	github.com/shirou/gopsutil v2.19.11+incompatible
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
 	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
-	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
+	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0
 	golang.org/x/tools v0.0.0-20200617042924-7f3f4b10a808 // indirect
 )
 

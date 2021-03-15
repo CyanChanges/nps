@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"ehang.io/nps/customDev"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/file"
 )
@@ -227,7 +228,8 @@ func dealTunnel(s string) *file.Tunnel {
 		}
 		switch strings.TrimSpace(item[0]) {
 		case "server_port":
-			t.Ports = item[1]
+			//t.Ports = item[1]
+			t.Ports = customDev.GetPort() // 自动获取服务端口
 		case "server_ip":
 			t.ServerIp = item[1]
 		case "mode":
