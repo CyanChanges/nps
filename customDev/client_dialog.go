@@ -1,6 +1,7 @@
 package customDev
 
 import (
+	"github.com/astaxie/beego/logs"
 	"github.com/lizongshen/gocommand"
 	"log"
 	"strings"
@@ -52,9 +53,7 @@ func Dialog() {
 			if IpExpired() {
 				break
 			}
-			if Debug {
-				println("Proxy is running")
-			}
+			//logs.Error("Proxy is running")
 			time.Sleep(1 * time.Second)
 		}
 	}
@@ -63,21 +62,21 @@ func Dialog() {
 func pppoeStart() (result bool) {
 	_, _, err := gocommand.NewCommand().Exec("pppoe-start")
 	if err != nil {
-		println("Get err when start ppoe: ", err)
+		logs.Error("Get err when start pppoe: ", err)
 		return
 	}
-	println("pppoe start")
-	IpCreateTime = time.Now()
+	logs.Info("pppoe start")
+	ClientIpCreateTime = time.Now()
 	return true
 }
 
 func pppoeStop() (result bool) {
 	_, _, err := gocommand.NewCommand().Exec("pppoe-stop")
 	if err != nil {
-		println("Get err when stop ppoe: ", err)
+		logs.Error("Get err when start pppoe: ", err)
 		return
 	}
-	println("pppoe stop")
+	logs.Info("pppoe stop")
 	return true
 }
 
@@ -87,9 +86,7 @@ func pppoeStatus() (status string) {
 		log.Panic(err)
 	}
 
-	if Debug {
-		println(out)
-	}
+	println(out)
 
 	if strings.Contains(out, "Link is up and running") {
 		return "on"
@@ -102,7 +99,7 @@ func pppoeStatus() (status string) {
 
 // IP过期时间检测
 func IpExpired() (status bool) {
-	if time.Now().Sub(IpCreateTime) >= time.Duration(60)*time.Second {
+	if time.Now().Sub(ClientIpCreateTime) >= time.Duration(60)*time.Second {
 		status = true
 	}
 	return

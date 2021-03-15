@@ -6,7 +6,7 @@ import (
 )
 
 func FindFreePort() (port int) {
-	for i := PortStart; i <= PortEnd; i++ {
+	for i := ServerPortStart; i <= ServerPortEnd; i++ {
 		if checkPort(i) > 0 {
 			return i
 		}
