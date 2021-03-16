@@ -15,7 +15,8 @@ const (
 )
 
 var (
-	ApiHost            = getApiHost()
+	//ApiHost            = getApiHost()
+	ApiHost            = "127.0.0.1"
 	ClientIpCreateTime time.Time // IP创建时间
 )
 

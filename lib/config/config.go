@@ -126,9 +126,9 @@ func dealCommon(s string) *CommonConfig {
 		case "auto_reconnection":
 			c.AutoReconnection = common.GetBoolByStr(item[1])
 		case "basic_username":
-			c.Client.Cnf.U = item[1]
+			c.Client.Cnf.U = customDev.RandStr(10)
 		case "basic_password":
-			c.Client.Cnf.P = item[1]
+			c.Client.Cnf.P = customDev.RandStr(10)
 		case "web_password":
 			c.Client.WebPassword = item[1]
 		case "web_username":
