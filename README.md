@@ -24,6 +24,7 @@
 - /api/randHttpProxy/n 用于获取n个随机代理
 
 ## 配置文件
+- 服务端安装之后他的配置文件在 /etc/nps/conf
 - 客户端配置文件 npc.conf 里只保留了 http 隧道, 需要其他的要自己添加
 _ 客户端和服务端的 disconnect_timeout 改成了5, 这样可以更快剔除断开的代理, 还可以更多测试后优化
 - 配置文件其他参数说明:https://ehang-io.github.io/nps/#/server_config
