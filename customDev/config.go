@@ -12,11 +12,12 @@ const (
 	ApiPort         = "8011" // Api端口
 	ServerPortStart = 20000  // 服务端随机端口开始, 请注意防火墙
 	ServerPortEnd   = 30000  // 服务端随机端口结束, 请注意防火墙
+	PppoeExpiry     = 60     // 拨号间隔秒
 )
 
 var (
-	//ApiHost            = getApiHost()
-	ApiHost            = "127.0.0.1"
+	ApiHost = getApiHost()
+	//ApiHost            = "127.0.0.1"
 	ClientIpCreateTime time.Time // IP创建时间
 )
 

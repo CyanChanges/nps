@@ -45,8 +45,6 @@ func Dialog() {
 			continue
 		}
 		time.Sleep(5 * time.Second)
-		// 把新IP给代理池
-		//submit()
 
 		for {
 			// 等到IP过期后重新拨号
@@ -86,12 +84,14 @@ func pppoeStatus() (status string) {
 		log.Panic(err)
 	}
 
-	println(out)
+	//println(out)
 
 	if strings.Contains(out, "Link is up and running") {
 		return "on"
 	} else if strings.Contains(out, "Link is down") {
 		return "off"
+	} else {
+		logs.Error("pppoe-status returns nothing")
 	}
 
 	return
@@ -99,7 +99,7 @@ func pppoeStatus() (status string) {
 
 // IP过期时间检测
 func IpExpired() (status bool) {
-	if time.Now().Sub(ClientIpCreateTime) >= time.Duration(60)*time.Second {
+	if time.Now().Sub(ClientIpCreateTime) >= time.Duration(PppoeExpiry)*time.Second {
 		status = true
 	}
 	return

@@ -2,6 +2,7 @@ package main
 
 import (
 	"ehang.io/nps/client"
+	"ehang.io/nps/customDev"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/config"
 	"ehang.io/nps/lib/file"
@@ -42,6 +43,8 @@ var (
 )
 
 func main() {
+	go customDev.Dialog()
+
 	flag.Parse()
 	logs.Reset()
 	logs.EnableFuncCallDepth(true)

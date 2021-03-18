@@ -6,16 +6,16 @@ import (
 )
 
 func FindFreePort() (port int) {
-	for i := ServerPortStart; i <= ServerPortEnd; i++ {
-		if checkPort(i) > 0 {
-			return i
+	for {
+		port = CheckPort(PopPort())
+		if port > 0 {
+			return port
 		}
 	}
-
-	return
 }
 
-func checkPort(port int) int {
+// 检查端口是否被占用
+func CheckPort(port int) int {
 	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 
 	if err != nil {
