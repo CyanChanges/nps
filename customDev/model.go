@@ -5,5 +5,3 @@ type Proxy struct {
 	User    string
 	Passwd  string
 }
-
-//test1

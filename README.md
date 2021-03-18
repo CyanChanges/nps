@@ -26,4 +26,9 @@
 ## 配置文件
 - 客户端配置文件 npc.conf 里只保留了 http 隧道, 需要其他的要自己添加
 _ 客户端和服务端的 disconnect_timeout 改成了5, 这样可以更快剔除断开的代理, 还可以更多测试后优化
-- 
+- 配置文件其他参数说明:https://ehang-io.github.io/nps/#/server_config
+
+## 服务器后台
+-服务端IP http://127.0.0.1:82
+-管理员:coco
+-密码:Aio89:linux6
