@@ -99,7 +99,7 @@ func pppoeStatus() (status string) {
 
 // IP过期时间检测
 func IpExpired() (status bool) {
-	if time.Now().Sub(ClientIpCreateTime) >= time.Duration(PppoeExpiry)*time.Second {
+	if time.Now().Sub(ClientIpCreateTime) >= time.Duration(ClientPppoeExpiry)*time.Second {
 		status = true
 	}
 	return

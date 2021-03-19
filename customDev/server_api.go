@@ -20,8 +20,9 @@ func ApiWebServer() {
 // Set Routes
 func setupRoutes(app *fiber.App) {
 	// set handler for index page
-	app.Get("/api/freePort", GetFreePort)                 // set handler for index page
-	app.Get("/api/randHttpProxy/:amount?", RandHttpProxy) // set handler for index page
+	app.Get("/api/adslExpiry", AdslExpiry)
+	app.Get("/api/freePort", GetFreePort)
+	app.Get("/api/randHttpProxy/:amount?", RandHttpProxy)
 }
 
 // 返回一个空闲可用端口, 注意防火墙开启端口
@@ -29,6 +30,11 @@ func GetFreePort(c *fiber.Ctx) error {
 	availablePort := strconv.Itoa(FindFreePort())
 
 	return c.SendString(availablePort)
+}
+
+// 返回VPS拨号间隔
+func AdslExpiry(c *fiber.Ctx) error {
+	return c.JSON(serverPppoeExpiry)
 }
 
 // 返回代理
