@@ -60,7 +60,7 @@ func readLine(filePath string, lineNumber int) string {
 }
 
 func getPppoeExpiry() (port int) {
-	r, err := http.Get(fmt.Sprintf("http://%s:%s/api/pppoeExpiry", ApiHost, ApiPort))
+	r, err := http.Get(fmt.Sprintf("http://%s:%s/api/adslExpiry", ApiHost, ApiPort))
 	if err != nil {
 		logs.Error("代理池的API无法访问: %s\n", err)
 		return
