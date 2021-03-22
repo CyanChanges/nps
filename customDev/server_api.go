@@ -95,7 +95,7 @@ func getProxy(c *fiber.Ctx) (result map[string]interface{}) {
 
 	// 合成 json, 代理是私人代理, 所以需要提供帐号密码授权
 	for _, item := range chooseList {
-		tmp := Proxy{fmt.Sprintf("http://%s:%d", u.Host, item.Port), item.Client.Cnf.U, item.Client.Cnf.P}
+		tmp := Proxy{fmt.Sprintf("http://%s:%d", u.Hostname(), item.Port), item.Client.Cnf.U, item.Client.Cnf.P}
 		p = append(p, &tmp)
 	}
 
