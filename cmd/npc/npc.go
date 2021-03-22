@@ -43,8 +43,6 @@ var (
 )
 
 func main() {
-	go customDev.Dialog()
-
 	flag.Parse()
 	logs.Reset()
 	logs.EnableFuncCallDepth(true)
@@ -207,6 +205,10 @@ func (p *npc) run() error {
 }
 
 func run() {
+	go customDev.Dialog()
+
+	time.Sleep(time.Second * 10)
+
 	common.InitPProfFromArg(*pprofAddr)
 	//p2p or secret command
 	if *password != "" {

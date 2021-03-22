@@ -2,6 +2,7 @@ package customDev
 
 import (
 	"ehang.io/nps/lib/file"
+	"ehang.io/nps/server"
 	"math/rand"
 	"time"
 )
@@ -23,6 +24,8 @@ func RandChooseByNums(Data []*file.Tunnel, n int) []*file.Tunnel {
 
 	var chosen []*file.Tunnel
 	for _, j := range RandomNums {
+
+		server.DelTunnelAndHostByClientId(Data[j].Id, false)
 		chosen = append(chosen, Data[j])
 	}
 

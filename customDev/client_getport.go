@@ -6,10 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func GetPort() (port string) {
-	r, err := http.Get(fmt.Sprintf("http://%s:%s/api/freePort", ApiHost, ApiPort))
+	c := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	r, err := c.Get(fmt.Sprintf("http://%s:%s/api/freePort", ApiHost, ApiPort))
+
 	if err != nil {
 		logs.Error("代理池的API无法访问: %s\n", err)
 		return

@@ -7,6 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 func ApiWebServer() {
@@ -20,9 +21,35 @@ func ApiWebServer() {
 // Set Routes
 func setupRoutes(app *fiber.App) {
 	// set handler for index page
-	app.Get("/api/adslExpiry", AdslExpiry)
 	app.Get("/api/freePort", GetFreePort)
 	app.Get("/api/randHttpProxy/:amount?", RandHttpProxy)
+	app.Get("/api/delClient", DelClient)
+}
+
+// 删除代理,以IP为搜索条件
+func DelClient(c *fiber.Ctx) (err error) {
+	list, num := server.GetClientList(0, 10000, "", "", "", 0)
+
+	if num <= 0 {
+		return c.SendString("not in system")
+	}
+
+	var clientId int
+
+	// 从客户端列表里面找到对应客户端ID
+	for _, item := range list {
+		if strings.Contains(item.Addr, c.IP()) {
+			clientId = item.Id
+		}
+	}
+
+	if err := file.GetDb().DelClient(clientId); err != nil {
+		return c.SendString("delete error")
+	}
+	server.DelTunnelAndHostByClientId(clientId, false)
+	server.DelClientConnect(clientId)
+
+	return c.SendString("delete success")
 }
 
 // 返回一个空闲可用端口, 注意防火墙开启端口
@@ -30,11 +57,6 @@ func GetFreePort(c *fiber.Ctx) error {
 	availablePort := strconv.Itoa(FindFreePort())
 
 	return c.SendString(availablePort)
-}
-
-// 返回VPS拨号间隔
-func AdslExpiry(c *fiber.Ctx) error {
-	return c.JSON(serverPppoeExpiry)
 }
 
 // 返回代理

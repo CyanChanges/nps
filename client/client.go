@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"ehang.io/nps-mux"
+	"ehang.io/nps/customDev"
 	"net"
 	"net/http"
 	"strconv"
@@ -90,6 +91,11 @@ func (s *TRPClient) handleMain() {
 		flags, err := s.signal.ReadFlag()
 		if err != nil {
 			logs.Error("Accept server data error %s, end this service", err.Error())
+
+			// 服务端把客户端删除时收到的关闭信号
+			if customDev.ClientDisInternet && err.Error() == "EOF" {
+				customDev.ClientGotDelFlag = true
+			}
 			break
 		}
 		switch flags {

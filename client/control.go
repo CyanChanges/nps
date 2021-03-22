@@ -100,8 +100,23 @@ func StartFromFile(path string) {
 re:
 	if first || cnf.CommonConfig.AutoReconnection {
 		if !first {
-			logs.Info("Reconnecting...")
-			time.Sleep(time.Second * 5)
+			if customDev.ClientDisInternet {
+				// 程序主动断开拨号的情况
+				for i := 0; i <= 10; i++ {
+					time.Sleep(time.Second)
+					logs.Info("Waiting for adsl reconnect...")
+					if !customDev.ClientDisInternet {
+						break
+					}
+				}
+			} else {
+				// 不在拨号时期的情况
+				logs.Info("Reconnecting...")
+				//test := cnf
+				//print(test)
+				time.Sleep(time.Second * 5)
+			}
+
 		}
 	} else {
 		return

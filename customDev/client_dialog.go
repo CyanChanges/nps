@@ -1,9 +1,12 @@
 package customDev
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/logs"
 	"github.com/lizongshen/gocommand"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -11,6 +14,7 @@ import (
 func Dialog() {
 	for {
 		status := pppoeStatus()
+	rePppoeImmediately:
 		if status == "off" {
 			// 直接拨号
 			pppoeStart()
@@ -19,6 +23,7 @@ func Dialog() {
 				time.Sleep(1 * time.Second)
 				if pppoeStatus() == "on" {
 					// 等待直到拨号成功
+					ClientDisInternet = false
 					break
 				}
 			}
@@ -37,6 +42,7 @@ func Dialog() {
 				time.Sleep(1 * time.Second)
 				if pppoeStatus() == "on" {
 					// 等待直到拨号成功
+					ClientDisInternet = false
 					break
 				}
 			}
@@ -49,7 +55,11 @@ func Dialog() {
 		for {
 			// 等到IP过期后重新拨号
 			if IpExpired() {
-				break
+				tellServerDel()
+
+				// 马上进入重新拨号流程
+				status = "on"
+				goto rePppoeImmediately
 			}
 			//logs.Error("Proxy is running")
 			time.Sleep(1 * time.Second)
@@ -103,4 +113,38 @@ func IpExpired() (status bool) {
 		status = true
 	}
 	return
+}
+
+// 通知服务端删除自身, 然后等待客户端隧道退出
+func tellServerDel() {
+	ClientDisInternet = true
+
+	logs.Notice("告诉主机我要换IP了")
+	c := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	r, err := c.Get(fmt.Sprintf("http://%s:%s/api/delClient", ApiHost, ApiPort))
+	if err != nil {
+		logs.Error("代理池的API无法访问: %s\n", err)
+		return
+	}
+
+	defer r.Body.Close()
+
+	body, err := ioutil.ReadAll(r.Body)
+
+	if err != nil || r.StatusCode != 200 {
+		logs.Error("代理池的API无法访问: %s %d\n", err, r.StatusCode)
+		return
+	}
+
+	logs.Notice("通知服务器删除自身: %s\n", body)
+
+	for {
+		time.Sleep(time.Second)
+		if ClientGotDelFlag {
+			ClientGotDelFlag = false
+			break
+		}
+	}
 }

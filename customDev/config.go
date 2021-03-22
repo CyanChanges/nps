@@ -3,13 +3,8 @@ package customDev
 import (
 	"bufio"
 	"ehang.io/nps/lib/common"
-	"fmt"
-	"github.com/astaxie/beego/logs"
-	"io/ioutil"
-	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 	"time"
 )
 
@@ -23,8 +18,10 @@ const (
 var (
 	ApiHost = getApiHost()
 	//ApiHost            = "127.0.0.1"
-	ClientIpCreateTime time.Time          // IP创建时间
-	ClientPppoeExpiry  = getPppoeExpiry() // 客户端获取
+	ClientIpCreateTime time.Time // IP创建时间
+	ClientPppoeExpiry  = 120     // 客户端获取
+	ClientDisInternet  bool      // 客户端断开互联网
+	ClientGotDelFlag   bool      // 客户端删除后, tcp会收到服务器已断开的信号
 )
 
 // 从配置文件中获取服务端地址
@@ -57,29 +54,4 @@ func readLine(filePath string, lineNumber int) string {
 	}
 	defer file.Close()
 	return ""
-}
-
-func getPppoeExpiry() (port int) {
-	r, err := http.Get(fmt.Sprintf("http://%s:%s/api/adslExpiry", ApiHost, ApiPort))
-	if err != nil {
-		logs.Error("代理池的API无法访问: %s\n", err)
-		return
-	}
-
-	defer r.Body.Close()
-
-	body, err := ioutil.ReadAll(r.Body)
-
-	if err != nil || r.StatusCode != 200 {
-		logs.Error("代理池的API无法访问: %s %d\n", err, r.StatusCode)
-		return
-	}
-
-	// 判断是否数字
-	expiryInt, err := strconv.Atoi(string(body))
-	if err != nil {
-		return serverPppoeExpiry // 如果服务端没有就使用本地默认的
-	}
-
-	return expiryInt
 }
