@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	strings2 "strings"
 	"sync"
 	"time"
 
@@ -62,7 +63,12 @@ retry:
 	c, err := NewConn(s.bridgeConnType, s.vKey, s.svrAddr, common.WORK_MAIN, s.proxyUrl)
 	if err != nil {
 		logs.Error("The connection server failed and will be reconnected in five seconds, error", err.Error())
-		time.Sleep(time.Second * 5)
+		// key 不正确的时候会一直死循环
+		if strings2.Contains(err.Error(), "incorrect") {
+			logs.Error("校验码错误,必须要重启")
+			s.Close()
+			return
+		}
 		goto retry
 	}
 	if c == nil {

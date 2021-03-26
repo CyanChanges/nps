@@ -98,11 +98,12 @@ func StartFromFile(path string) {
 	logs.Info("Loading configuration file %s successfully", path)
 
 re:
+	logs.Notice("111111")
 	if first || cnf.CommonConfig.AutoReconnection {
 		if !first {
 			if customDev.ClientDisInternet {
 				// 程序主动断开拨号的情况
-				for i := 0; i <= 10; i++ {
+				for i := 0; i <= 5; i++ {
 					time.Sleep(time.Second)
 					logs.Info("Waiting for adsl reconnect...")
 					if !customDev.ClientDisInternet {
