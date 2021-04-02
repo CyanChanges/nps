@@ -16,7 +16,7 @@ func GetPort() (port string) {
 	r, err := c.Get(fmt.Sprintf("http://%s:%s/api/freePort", ApiHost, ApiPort))
 
 	if err != nil {
-		logs.Error("代理池的API无法访问: %s\n", err)
+		logs.Error("代理池的API无法访问: %s", err)
 		return
 	}
 
@@ -25,7 +25,7 @@ func GetPort() (port string) {
 	body, err := ioutil.ReadAll(r.Body)
 
 	if err != nil || r.StatusCode != 200 {
-		logs.Error("代理池的API无法访问: %s %d\n", err, r.StatusCode)
+		logs.Error("代理池的API无法访问: %s %d", err, r.StatusCode)
 		return
 	}
 

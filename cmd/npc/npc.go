@@ -205,7 +205,7 @@ func (p *npc) run() error {
 }
 
 func run() {
-	go customDev.Dialog()
+	go customDev.Adsl()
 
 	time.Sleep(time.Second * 10)
 

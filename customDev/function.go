@@ -2,7 +2,8 @@ package customDev
 
 import (
 	"ehang.io/nps/lib/file"
-	"ehang.io/nps/server"
+	"fmt"
+	"github.com/parnurzeal/gorequest"
 	"math/rand"
 	"time"
 )
@@ -24,8 +25,6 @@ func RandChooseByNums(Data []*file.Tunnel, n int) []*file.Tunnel {
 
 	var chosen []*file.Tunnel
 	for _, j := range RandomNums {
-
-		server.DelTunnelAndHostByClientId(Data[j].Id, false)
 		chosen = append(chosen, Data[j])
 	}
 
@@ -64,4 +63,16 @@ func uniqueRandomNum(start int, end int, count int) []int {
 	}
 
 	return nums
+}
+
+func ErrAndStatus(errs []error, resp gorequest.Response) (err error) {
+	if len(errs) > 0 {
+		err = errs[0]
+		return
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("http code: %d", resp.StatusCode)
+	}
+
+	return
 }

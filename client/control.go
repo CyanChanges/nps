@@ -98,26 +98,10 @@ func StartFromFile(path string) {
 	logs.Info("Loading configuration file %s successfully", path)
 
 re:
-	logs.Notice("111111")
 	if first || cnf.CommonConfig.AutoReconnection {
 		if !first {
-			if customDev.ClientDisInternet {
-				// 程序主动断开拨号的情况
-				for i := 0; i <= 5; i++ {
-					time.Sleep(time.Second)
-					logs.Info("Waiting for adsl reconnect...")
-					if !customDev.ClientDisInternet {
-						break
-					}
-				}
-			} else {
-				// 不在拨号时期的情况
-				logs.Info("Reconnecting...")
-				//test := cnf
-				//print(test)
-				time.Sleep(time.Second * 5)
-			}
-
+			logs.Info("Reconnecting...")
+			time.Sleep(time.Second * 5)
 		}
 	} else {
 		return
@@ -547,10 +531,4 @@ func getRandomPortArr(min, max int) []int {
 		addrAddr[r] = temp
 	}
 	return addrAddr
-}
-
-func portOccupied() {
-	var errAdd = errors.New("Proxy port occupied, restart client.")
-	logs.Error(errAdd)
-	os.Exit(120)
 }

@@ -31,7 +31,7 @@ func DelClient(c *fiber.Ctx) (err error) {
 	list, num := server.GetClientList(0, 10000, "", "", "", 0)
 
 	if num <= 0 {
-		return c.SendString("not in system")
+		return c.SendString(c.IP() + ", system doesn't have any proxy")
 	}
 
 	var clientId int
@@ -43,13 +43,17 @@ func DelClient(c *fiber.Ctx) (err error) {
 		}
 	}
 
+	if clientId == 0 {
+		return c.SendString(c.IP() + " doesn't in the system")
+	}
+
 	if err := file.GetDb().DelClient(clientId); err != nil {
-		return c.SendString("delete error")
+		return c.SendString(c.IP() + " delete error")
 	}
 	server.DelTunnelAndHostByClientId(clientId, false)
 	server.DelClientConnect(clientId)
 
-	return c.SendString("delete success")
+	return c.SendString(c.IP() + " delete success")
 }
 
 // 返回一个空闲可用端口, 注意防火墙开启端口
@@ -71,10 +75,18 @@ func getProxy(c *fiber.Ctx) (result map[string]interface{}) {
 
 	// 通过 nps 服务端内置的列队来获取代理开放的端口, 种类 httpProxy
 	//list, cnt := server.GetClientList(0, 100, "", "", "", 0)  // 客户端列表
-	list, num := server.GetTunnel(0, 100, "httpProxy", 0, "") // 隧道列表
+	listTmp, _ := server.GetTunnel(0, 100, "httpProxy", 0, "") // 隧道列表
 
-	if num <= 0 {
-		// 还没有任何代理
+	// 丢弃离线的代理
+	var aliveList []*file.Tunnel
+	for _, item := range listTmp {
+		if item.Client.IsConnect {
+			aliveList = append(aliveList, item)
+		}
+	}
+
+	if len(aliveList) <= 0 {
+		// 没有任何可用代理
 		return nil
 	}
 
@@ -89,7 +101,7 @@ func getProxy(c *fiber.Ctx) (result map[string]interface{}) {
 	)
 
 	// 随机获取N个代理
-	chooseList = RandChooseByNums(list, needAmount)
+	chooseList = RandChooseByNums(aliveList, needAmount)
 
 	u, _ := url.Parse(c.BaseURL()) // 服务器地址
 
