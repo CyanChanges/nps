@@ -12,7 +12,7 @@ const (
 	ApiPort           = "8011" // Api端口
 	ServerPortStart   = 20000  // 服务端随机端口开始, 请注意防火墙
 	ServerPortEnd     = 30000  // 服务端随机端口结束, 请注意防火墙
-	ClientPppoeExpiry = 60     // 拨号间隔(秒)
+	ClientPppoeExpiry = 120    // 拨号间隔(秒)
 )
 
 var (
