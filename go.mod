@@ -5,6 +5,7 @@ go 1.14
 require (
 	ehang.io/nps-mux v0.0.0-20200617154922-5dc86cc6082a
 	fyne.io/fyne v1.3.3
+	fyne.io/fyne/v2 v2.0.3 // indirect
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/astaxie/beego v1.12.0
 	github.com/bradfitz/iter v0.0.0-20191230175014-e8f45d346db8 // indirect
@@ -16,7 +17,9 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gofiber/fiber/v2 v2.6.0
 	github.com/golang/snappy v0.0.2
+	github.com/google/gops v0.3.19
 	github.com/hooklift/assert v0.0.0-20170704181755-9d1defd6d214 // indirect
+	github.com/huandu/go-clone v1.3.0
 	github.com/kardianos/service v1.0.0
 	github.com/klauspost/cpuid v1.3.0 // indirect
 	github.com/klauspost/pgzip v1.2.1 // indirect
@@ -28,6 +31,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/shirou/gopsutil v2.19.11+incompatible
+	github.com/shirou/gopsutil/v3 v3.21.6
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/xtaci/kcp-go v5.4.20+incompatible
