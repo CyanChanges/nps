@@ -1,39 +1,86 @@
-# NPS (修改版)
-[官方说明](https://github.com/ehang-io/nps/blob/master/README.md)|[中文文档](https://github.com/ehang-io/nps/blob/master/README_zh.md)
 
-# 使用说明
-服务端: 将 nps 和 conf 传到服务器,使用 sudo ./nps install 安装服务端,然后使用 sudo nps start 启动服务端.
-客户端:将 client, npc, conf 传到拨号机器, 然后使用运行 client 即可.
+# NPS
+![](https://img.shields.io/github/stars/ehang-io/nps.svg)   ![](https://img.shields.io/github/forks/ehang-io/nps.svg)
+[![Gitter](https://badges.gitter.im/cnlh-nps/community.svg)](https://gitter.im/cnlh-nps/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+![Release](https://github.com/ehang-io/nps/workflows/Release/badge.svg)
+![GitHub All Releases](https://img.shields.io/github/downloads/ehang-io/nps/total)
 
-# nps 自定义开发说明
-自定义开发主要是为了适应拨号VPS, 特别是内网拨号的主机而开发, 增加了自动获取服务器空闲端口的功能. 增加了定时重拨功能.
+[README](https://github.com/ehang-io/nps/blob/master/README.md)|[中文文档](https://github.com/ehang-io/nps/blob/master/README_zh.md)
 
-## 源码改动
-- **所有扩展的功能全部放在 customDev 文件夹里**
-- 文件夹内 client_ 前缀的是客户端调用的, server_ 前缀的是服务端调用的
-- 服务端和客户端通过自定义的 web api 传递空闲端口
-- 如果客户端连接分配的端口失败, 会重新从服务端获取新的端口
-- 客户端每过N分钟重新拨号一次
+NPS is a lightweight, high-performance, powerful **intranet penetration** proxy server, with a powerful web management terminal.
 
 
-## 注意
-- 服务端自动分配 20000-30000 之间的端口, 请在防火墙上允许
-- **目前只对 http 代理功能做过测试, 其他功能不保证能用.**
-- 客户端的 conf 配置文件里的 server_port 已改为自动获取, conf 文件的可以忽略不管
-- 客户端配置文件里 basic_username 和 basic_password 已改成了随机生成, 可以忽略不管
+![image](https://github.com/ehang-io/nps/blob/master/image/web.png?raw=true)
 
-## 接口
-- /api/freePort 用于客户端获取服务端可用端口
-- /api/randHttpProxy/n 用于获取n个随机代理
+## Feature
 
-## 配置文件
-- 服务端安装之后他的配置文件在 /etc/nps/conf
-- 客户端配置文件 npc.conf 里只保留了 http 隧道, 需要其他的要自己添加
-_ 客户端和服务端的 disconnect_timeout 改成了5, 这样可以更快剔除断开的代理, 还可以更多测试后优化
-- 配置文件其他参数说明:https://ehang-io.github.io/nps/#/server_config
+- Comprehensive protocol support, compatible with almost all commonly used protocols, such as tcp, udp, http(s), socks5, p2p, http proxy ...
+- Full platform compatibility (linux, windows, macos, Synology, etc.), support installation as a system service simply.
+- Comprehensive control, both client and server control are allowed.
+- Https integration, support to convert backend proxy and web services to https, and support multiple certificates.
+- Just simple configuration on web ui can complete most requirements.
+- Complete information display, such as traffic, system information, real-time bandwidth, client version, etc.
+- Powerful extension functions, everything is available (cache, compression, encryption, traffic limit, bandwidth limit, port reuse, etc.)
+- Domain name resolution has functions such as custom headers, 404 page configuration, host modification, site protection, URL routing, and pan-resolution.
+- Multi-user and user registration support on server.
 
-## 服务器后台,请在 nps.conf 里自行修改密码
--webApi http://127.0.0.1:8011
--后台 http://127.0.0.1:8080
--管理员:admin
--密码:admin123
+**Didn't find the feature you want? It doesn't matter, click [Enter the document](https://ehang-io.github.io/nps/) to find it!**
+
+## Quick start
+
+### Installation
+
+> [releases](https://github.com/ehang-io/nps/releases)
+
+Download the corresponding system version, the server and client are separate.
+
+### Server start
+
+After downloading the server compressed package, unzip it, and then enter the unzipped folder.
+
+- execute installation command
+
+For linux、darwin ```sudo ./nps install```
+
+For windows, run cmd as administrator and enter the installation directory ```nps.exe install```
+
+- default ports
+
+The default configuration file of nps use 80，443，8080，8024 ports
+
+80 and 443 ports for host mode default ports
+
+8080 for web management access port
+
+8024 for net bridge port, to communicate between server and client
+
+- start up
+
+For linux、darwin ```sudo nps start```
+
+For windows, run cmd as administrator and enter the program directory ```nps.exe start```
+
+```After installation, the windows configuration file is located at C:\Program Files\nps, linux or darwin is located at /etc/nps```
+
+**If you don't find it started successfully, you can check the log (Windows log files are located in the current running directory, linux and darwin are located in /var/log/nps.log).**
+
+- Access server IP:web service port (default is 8080).
+- Login with username and password (default is admin/123, must be modified when officially used).
+- Create a client.
+
+### Client connection
+- Click the + sign in front of the client in web management and copy the startup command.
+- Execute the startup command, Linux can be executed directly, Windows will replace ./npc with npc.exe and execute it with cmd.
+
+
+If you need to register to the system service, you can check [Register to the system service](https://ehang-io.github.io/nps/#/use?id=注册到系统服务)
+
+### Configuration
+- After the client connects, configure the corresponding penetration service in the web.
+- For more advanced usage, see [Complete Documentation](https://ehang-io.github.io/nps/)
+
+## Contribution
+- If you encounter a bug, you can submit it to the dev branch directly.
+- If you encounter a problem, you can feedback through the issue.
+- The project is under development, and there is still a lot of room for improvement. If you can contribute code, please submit PR to the dev branch.
+- If there is feedback on new features, you can feedback via issues or qq group.

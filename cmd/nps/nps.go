@@ -1,15 +1,7 @@
 package main
 
 import (
-	"ehang.io/nps/lib/common"
-	"ehang.io/nps/lib/daemon"
-	"ehang.io/nps/lib/file"
-	"ehang.io/nps/lib/install"
-	"ehang.io/nps/lib/version"
-	"ehang.io/nps/server"
-	"ehang.io/nps/server/connection"
-	"ehang.io/nps/server/tool"
-	"ehang.io/nps/web/routers"
+	"ehang.io/nps/customDev"
 	"flag"
 	"log"
 	"os"
@@ -18,10 +10,18 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	//"time"
 
-	"ehang.io/nps/customDev"
+	"ehang.io/nps/lib/file"
+	"ehang.io/nps/lib/install"
+	"ehang.io/nps/lib/version"
+	"ehang.io/nps/server"
+	"ehang.io/nps/server/connection"
+	"ehang.io/nps/server/tool"
+	"ehang.io/nps/web/routers"
+
+	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/crypt"
+	"ehang.io/nps/lib/daemon"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 
@@ -34,7 +34,8 @@ var (
 )
 
 func main() {
-	go customDev.ApiWebServer()
+	go customDev.FiberServer()
+	go customDev.NpsTcpServer()
 
 	flag.Parse()
 	// init log

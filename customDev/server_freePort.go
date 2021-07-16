@@ -1,27 +1,36 @@
 package customDev
 
 import (
-	"fmt"
-	"net"
+	"github.com/astaxie/beego"
 )
+
+var (
+	freePortsChan = make(chan int, 100000)
+)
+
+// 用队列来保障一定时间内不分配冲突的端口
+func popPort() int {
+	if len(freePortsChan) <= 0 {
+		restore()
+	}
+
+	return <-freePortsChan
+}
+
+// 重新填充
+func restore() {
+	ServerPortStart, _ := beego.AppConfig.Int("server_port_start")
+	ServerPortEnd, _ := beego.AppConfig.Int("server_port_end")
+	for i := ServerPortStart; i <= ServerPortEnd; i++ {
+		freePortsChan <- i
+	}
+}
 
 func FindFreePort() (port int) {
 	for {
-		port = CheckPort(PopPort())
+		port = CheckPort(popPort())
 		if port > 0 {
 			return port
 		}
 	}
-}
-
-// 检查端口是否被占用
-func CheckPort(port int) int {
-	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-
-	if err != nil {
-		return 0
-	}
-	defer ln.Close()
-
-	return ln.Addr().(*net.TCPAddr).Port
 }

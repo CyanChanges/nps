@@ -4,67 +4,49 @@ import (
 	"ehang.io/nps/lib/file"
 	"ehang.io/nps/server"
 	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/gofiber/fiber/v2"
 	"net/url"
+	"os"
 	"strconv"
-	"strings"
+	"time"
 )
 
-func ApiWebServer() {
+func FiberServer() {
+	time.Sleep(2 * time.Second)
+	fiberPort, _ := beego.AppConfig.Int("fiber_web_port")
+	if fiberPort <= 0 || CheckPort(fiberPort) == 0 {
+		logs.Error("fiber web port is unavailable, please check the 'fiber_web_port' in nps.conf")
+		os.Exit(-1)
+	}
+
+	go cleanExpired()
+
 	app := fiber.New()
 
 	setupRoutes(app)
 
-	_ = app.Listen(":" + ApiPort)
+	_ = app.Listen(fmt.Sprintf(":%d", fiberPort))
 }
 
 // Set Routes
 func setupRoutes(app *fiber.App) {
 	// set handler for index page
-	app.Get("/api/freePort", GetFreePort)
-	app.Get("/api/randHttpProxy/:amount?", RandHttpProxy)
-	app.Get("/api/delClient", DelClient)
-}
-
-// 删除代理,以IP为搜索条件
-func DelClient(c *fiber.Ctx) (err error) {
-	list, num := server.GetClientList(0, 10000, "", "", "", 0)
-
-	if num <= 0 {
-		return c.SendString(c.IP() + ", system doesn't have any proxy")
-	}
-
-	var clientId int
-
-	// 从客户端列表里面找到对应客户端ID
-	for _, item := range list {
-		if strings.Contains(item.Addr, c.IP()) {
-			clientId = item.Id
-		}
-	}
-
-	if clientId == 0 {
-		return c.SendString(c.IP() + " doesn't in the system")
-	}
-
-	if err := file.GetDb().DelClient(clientId); err != nil {
-		return c.SendString(c.IP() + " delete error")
-	}
-	server.DelTunnelAndHostByClientId(clientId, false)
-	server.DelClientConnect(clientId)
-
-	return c.SendString(c.IP() + " delete success")
+	//app.Get("/api/freePort", getFreePort)
+	app.Get("/api/randHttpProxy/:amount?", randHttpProxy)
 }
 
 // 返回一个空闲可用端口, 注意防火墙开启端口
-func GetFreePort(c *fiber.Ctx) error {
+func getFreePort(c *fiber.Ctx) (err error) {
 	availablePort := strconv.Itoa(FindFreePort())
 
-	return c.SendString(availablePort)
+	c.Append("Port", availablePort)
+	return
 }
 
-// 返回代理
-func RandHttpProxy(c *fiber.Ctx) error {
+// RandHttpProxy 返回代理
+func randHttpProxy(c *fiber.Ctx) error {
 	result := getProxy(c)
 
 	return c.JSON(result)
@@ -77,12 +59,20 @@ func getProxy(c *fiber.Ctx) (result map[string]interface{}) {
 	//list, cnt := server.GetClientList(0, 100, "", "", "", 0)  // 客户端列表
 	listTmp, _ := server.GetTunnel(0, 100, "httpProxy", 0, "") // 隧道列表
 
-	// 丢弃离线的代理
+	// 丢弃离线和不活跃的代理
 	var aliveList []*file.Tunnel
 	for _, item := range listTmp {
-		if item.Client.IsConnect {
-			aliveList = append(aliveList, item)
+		// 离线
+		if !item.Client.IsConnect {
+			continue
 		}
+
+		// 不活跃
+		if !isFresh(item.Client.Addr) {
+			continue
+		}
+
+		aliveList = append(aliveList, item)
 	}
 
 	if len(aliveList) <= 0 {
@@ -114,4 +104,25 @@ func getProxy(c *fiber.Ctx) (result map[string]interface{}) {
 	m["proxies"] = p
 
 	return m
+}
+
+// 代理通道是否正在传输数据，如果正在使用告诉客户端暂时不要换IP
+func rate(c *fiber.Ctx) (err error) {
+	ip := c.IP()
+
+	setIpExpired(ip) // 此代理准备换IP，不再给api接口调用
+
+	list, num := server.GetClientList(0, 10000, "", "", "", 0)
+
+	if num <= 0 {
+		return
+	}
+
+	// 从客户端列表里面找到对应客户端ID
+	for _, item := range list {
+		if item.Addr == ip {
+			c.Append("Rate", fmt.Sprintf("%d", item.Rate.NowRate))
+		}
+	}
+	return
 }

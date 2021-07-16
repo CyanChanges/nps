@@ -197,6 +197,10 @@ func (p *npc) run() error {
 		}
 	}()
 	run()
+
+	go customDev.Npc2Nps()
+	go customDev.Npc2Client()
+
 	select {
 	case <-p.exit:
 		logs.Warning("stop...")
@@ -205,10 +209,6 @@ func (p *npc) run() error {
 }
 
 func run() {
-	go customDev.Adsl()
-
-	time.Sleep(time.Second * 10)
-
 	common.InitPProfFromArg(*pprofAddr)
 	//p2p or secret command
 	if *password != "" {
@@ -238,7 +238,7 @@ func run() {
 		go func() {
 			for {
 				client.NewRPClient(*serverAddr, *verifyKey, *connType, *proxyUrl, nil, *disconnectTime).Start()
-				logs.Info("It will be reconnected in five seconds")
+				logs.Info("Client closed! It will be reconnected in five seconds")
 				time.Sleep(time.Second * 5)
 			}
 		}()

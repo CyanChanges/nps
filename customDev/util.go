@@ -3,10 +3,41 @@ package customDev
 import (
 	"ehang.io/nps/lib/file"
 	"fmt"
+	"github.com/google/gops/goprocess"
 	"github.com/parnurzeal/gorequest"
 	"math/rand"
+	"net"
 	"time"
 )
+
+// tcp传递的命令
+const (
+	DIS_LIVE1           = "ds1"
+	DIS_LIVE2           = "ds2"
+	ROGER_DISLIVE       = "rds"
+	YOU_CAN_RESRART     = "yst"
+	IS_USING            = "tok"
+	NOT_USING           = "tno"
+	TIME_OVER           = "tov"
+	PING                = "pin"
+	PONG                = "pon"
+	ALIVE               = "alv"
+	VKEY_WRONG          = "vkw"
+	VERSION_WRONG       = "vsw"
+	TCP_WITH_NPS_FAILED = "tfd"
+)
+
+// 检查端口是否被占用
+func CheckPort(port int) int {
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+
+	if err != nil {
+		return 0
+	}
+	defer ln.Close()
+
+	return ln.Addr().(*net.TCPAddr).Port
+}
 
 // Random one string with numbers and strings
 func RandStr(length int) string {
@@ -75,4 +106,23 @@ func ErrAndStatus(errs []error, resp gorequest.Response) (err error) {
 	}
 
 	return
+}
+
+// IsRunning 查看进程是否运行
+func IsRunning(pid int) (running bool) {
+	defer func() {
+		if err := recover(); err != nil {
+			//logs.Error("npc 已经停止运行:", err)
+		}
+	}()
+	_, b, _ := goprocess.Find(pid)
+	return b
+}
+
+// B2i bool 转 int
+func B2i(b bool) int8 {
+	if b {
+		return 1
+	}
+	return 0
 }

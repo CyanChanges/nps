@@ -2,6 +2,7 @@ package client
 
 import (
 	"bufio"
+	"ehang.io/nps/customDev"
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
@@ -19,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"ehang.io/nps/customDev"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/config"
 	"ehang.io/nps/lib/conn"
@@ -99,6 +99,7 @@ func StartFromFile(path string) {
 
 re:
 	if first || cnf.CommonConfig.AutoReconnection {
+		customDev.RemoteNpsIP = customDev.GetIpByStr(cnf.CommonConfig.Server)
 		if !first {
 			logs.Info("Reconnecting...")
 			time.Sleep(time.Second * 5)
@@ -157,13 +158,6 @@ re:
 		}
 		if !c.GetAddStatus() {
 			logs.Error(errAdd, v.Ports, v.Remark)
-
-			// 自动修改端口
-			newPort := customDev.GetPort()
-			if newPort != "" {
-				logs.Informational("Change to Port: %s instead", newPort)
-				v.Ports = newPort
-			}
 			goto re
 		}
 		if v.Mode == "file" {
@@ -241,6 +235,7 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 	}
 	if crypt.Md5(version.GetVersion()) != string(b) {
 		logs.Error("The client does not match the server version. The current core version of the client is", version.GetVersion())
+		customDev.VersionWrong()
 		return nil, err
 	}
 	if _, err := c.Write([]byte(common.Getverifyval(vkey))); err != nil {
@@ -249,6 +244,7 @@ func NewConn(tp string, vkey string, server string, connType string, proxyUrl st
 	if s, err := c.ReadFlag(); err != nil {
 		return nil, err
 	} else if s == common.VERIFY_EER {
+		customDev.VkeyWrong()
 		return nil, errors.New(fmt.Sprintf("Validation key %s incorrect", vkey))
 	}
 	if _, err := c.Write([]byte(connType)); err != nil {

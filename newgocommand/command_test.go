@@ -1,4 +1,4 @@
-package gocommand
+package newgocommand
 
 import (
 	"testing"

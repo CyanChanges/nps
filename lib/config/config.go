@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"ehang.io/nps/customDev"
 	"ehang.io/nps/lib/common"
 	"ehang.io/nps/lib/file"
 )
@@ -228,8 +227,7 @@ func dealTunnel(s string) *file.Tunnel {
 		}
 		switch strings.TrimSpace(item[0]) {
 		case "server_port":
-			//t.Ports = item[1]
-			t.Ports = customDev.GetPort() // 自动获取服务端口
+			t.Ports = item[1]
 		case "server_ip":
 			t.ServerIp = item[1]
 		case "mode":
@@ -304,7 +302,7 @@ func delLocalService(s string) *LocalServer {
 
 func getAllTitle(content string) (arr []string, err error) {
 	var re *regexp.Regexp
-	re, err = regexp.Compile(`\[.+?\]`)
+	re, err = regexp.Compile(`(?m)^\[[^\[\]\r\n]+\]`)
 	if err != nil {
 		return
 	}
