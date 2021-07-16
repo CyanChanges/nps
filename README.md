@@ -1,8 +1,11 @@
 # NPS (修改版)
 [官方说明](https://github.com/ehang-io/nps/blob/master/README.md)|[中文文档](https://github.com/ehang-io/nps/blob/master/README_zh.md)
 
-# nps 自定义开发说明
+# 使用说明
+服务端: 将 nps 和 conf 传到服务器,使用 sudo ./nps install 安装服务端,然后使用 sudo nps start 启动服务端.
+客户端:将 client, npc, conf 传到拨号机器, 然后使用运行 client 即可.
 
+# nps 自定义开发说明
 自定义开发主要是为了适应拨号VPS, 特别是内网拨号的主机而开发, 增加了自动获取服务器空闲端口的功能. 增加了定时重拨功能.
 
 ## 源码改动
@@ -29,8 +32,8 @@
 _ 客户端和服务端的 disconnect_timeout 改成了5, 这样可以更快剔除断开的代理, 还可以更多测试后优化
 - 配置文件其他参数说明:https://ehang-io.github.io/nps/#/server_config
 
-## 服务器后台
+## 服务器后台,请在 nps.conf 里自行修改密码
 -webApi http://127.0.0.1:8011
 -后台 http://127.0.0.1:8080
--管理员:coco
--密码:Aio89:linux6
+-管理员:admin
+-密码:admin123
